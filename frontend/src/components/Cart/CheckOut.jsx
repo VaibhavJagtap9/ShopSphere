@@ -50,8 +50,7 @@ const CheckOut = () => {
 
   const handlePaymentSuccess = async (details) => {
     try {
-      // ✅ Fixed endpoint (added missing slash before /pay)
-      const response = await axios.put(
+      await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
         { paymentStatus: "paid", paymentDetails: details },
         {
@@ -69,7 +68,7 @@ const CheckOut = () => {
 
   const handleFinalizeCheckout = async (checkoutId) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`,
         {},
         {
@@ -249,6 +248,22 @@ const CheckOut = () => {
             )}
           </div>
         </form>
+
+        {/* ✅ Sandbox Credentials Always Visible */}
+        <div className="mt-6 p-4 border rounded bg-yellow-50 text-sm">
+          <h4 className="font-semibold mb-2">PayPal Sandbox Test Account</h4>
+          <p>
+            <span className="font-semibold">Username:</span>{" "}
+            sb-47xoqo46181691@personal.example.com
+          </p>
+          <p>
+            <span className="font-semibold">Password:</span> 6cN1*f/F
+          </p>
+          <p className="text-gray-600 mt-2">
+            ⚠️ Use these credentials in the PayPal login popup to complete test
+            payments.
+          </p>
+        </div>
       </div>
 
       {/* Right Section */}
@@ -258,7 +273,6 @@ const CheckOut = () => {
           {cart.products.map((product, index) => {
             const backendURL = import.meta.env.VITE_BACKEND_URL || "";
 
-            // ✅ Use same logic as CartContents
             const imageUrl = product.image?.startsWith("http")
               ? product.image
               : `${backendURL}${product.image}`;
