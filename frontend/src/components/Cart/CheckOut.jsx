@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import PayPalButton from "./PayPalButton";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,12 +24,30 @@ const CheckOut = () => {
     phone: "",
   });
 
+  // copy-to-clipboard state
+  const [copiedField, setCopiedField] = useState(""); // "username" | "password" | ""
+  const copyTimeoutRef = useRef(null);
+
+  // PayPal sandbox credentials (test account)
+  // Note: These are sandbox/test credentials only — do NOT use real credentials here.
+  const PAYPAL_SANDBOX_USERNAME = "sb-47xoqo46181691@personal.example.com";
+  const PAYPAL_SANDBOX_PASSWORD = "6cN1*f/F";
+
   // Ensure cart is loaded before processing
   useEffect(() => {
     if (!cart || !cart.products || cart.products.length === 0) {
       navigate("/");
     }
   }, [cart, navigate]);
+
+  useEffect(() => {
+    return () => {
+      // cleanup any pending timeout
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleCreateCheckOut = async (e) => {
     e.preventDefault();
@@ -80,6 +98,35 @@ const CheckOut = () => {
       navigate("/order-confirmation");
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const copyToClipboard = async (text, fieldName) => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // fallback for older browsers
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      setCopiedField(fieldName);
+
+      // reset after 2 seconds
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedField("");
+      }, 2000);
+    } catch (err) {
+      console.error("Copy failed", err);
+      setCopiedField("");
     }
   };
 
@@ -249,19 +296,67 @@ const CheckOut = () => {
           </div>
         </form>
 
-        {/* ✅ Sandbox Credentials Always Visible */}
+        {/* ✅ Sandbox Credentials Always Visible with Copy Buttons */}
         <div className="mt-6 p-4 border rounded bg-yellow-50 text-sm">
-          <h4 className="font-semibold mb-2">PayPal Sandbox Test Account</h4>
-          <p>
-            <span className="font-semibold">Username:</span>{" "}
-            sb-47xoqo46181691@personal.example.com
-          </p>
-          <p>
-            <span className="font-semibold">Password:</span> 6cN1*f/F
-          </p>
-          <p className="text-gray-600 mt-2">
-            ⚠️ Use these credentials in the PayPal login popup to complete test
-            payments.
+          <h4 className="font-semibold mb-3">PayPal Sandbox Test Account</h4>
+
+          {/* Username row */}
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex-1 pr-3">
+              <p className="text-xs sm:text-sm">
+                <span className="font-semibold">Username:</span>{" "}
+                <span className="break-all">
+                  {PAYPAL_SANDBOX_USERNAME}
+                </span>
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  copyToClipboard(PAYPAL_SANDBOX_USERNAME, "username")
+                }
+                className="px-3 py-1 text-xs rounded bg-white border shadow-sm hover:bg-gray-100 transition"
+                aria-label="Copy PayPal sandbox username"
+              >
+                Copy
+              </button>
+              {copiedField === "username" && (
+                <span className="text-emerald-600 text-xs font-medium">
+                  Copied!
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Password row */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1 pr-3">
+              <p className="text-xs sm:text-sm">
+                <span className="font-semibold">Password:</span>{" "}
+                <span className="break-all">{PAYPAL_SANDBOX_PASSWORD}</span>
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  copyToClipboard(PAYPAL_SANDBOX_PASSWORD, "password")
+                }
+                className="px-3 py-1 text-xs rounded bg-white border shadow-sm hover:bg-gray-100 transition"
+                aria-label="Copy PayPal sandbox password"
+              >
+                Copy
+              </button>
+              {copiedField === "password" && (
+                <span className="text-emerald-600 text-xs font-medium">
+                  Copied!
+                </span>
+              )}
+            </div>
+          </div>
+
+          <p className="text-gray-600 mt-3 text-xs">
+            ⚠️ These are sandbox credentials for testing only. Do not use in
+            production.
           </p>
         </div>
       </div>
@@ -287,18 +382,12 @@ const CheckOut = () => {
                     src={imageUrl || "/placeholder.png"}
                     alt={product.name || "Product"}
                     className="w-20 h-24 object-cover mr-4 rounded"
-                    onError={(e) =>
-                      (e.currentTarget.src = "/placeholder.png")
-                    }
+                    onError={(e) => (e.currentTarget.src = "/placeholder.png")}
                   />
                   <div>
                     <h3 className="text-md">{product.name}</h3>
-                    <p className="text-gray-500">
-                      Size: {product.size || "-"}
-                    </p>
-                    <p className="text-gray-500">
-                      Color: {product.color || "-"}
-                    </p>
+                    <p className="text-gray-500">Size: {product.size || "-"}</p>
+                    <p className="text-gray-500">Color: {product.color || "-"}</p>
                   </div>
                 </div>
                 <p className="text-xl">
