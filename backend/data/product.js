@@ -866,30 +866,29 @@ const products = [
   },
 
   //35
-  {
-    name: "Lace-Trimmed Cami Top",
-    description:
-      "A delicate cami top with lace trim and adjustable straps. The lightweight fabric makes it perfect for layering or wearing alone during warmer weather.",
-    price: 35,
-    discountPrice: 30,
-    countInStock: 40,
-    sku: "TW-W-005",
-    category: "Top Wear",
-    brand: "DelicateWear",
-    sizes: ["S", "M", "L"],
-    colors: ["Red", "White", "Black"],
-    collections: "Lingerie-Inspired",
-    material: "Silk Blend",
-    gender: "Women",
-    images: [
-      { url: "/images/thirty five/lace-trimmed-cami-top-red.jpeg", altText: "Lace-Trimmed Cami Top" },
-      { url: "/images/thirty five/lace-trimmed-cami-top-white.jpeg", altText: "Lace-Trimmed Cami Top" },
-      { url: "/images/thirty five/lace-trimmed-cami-top-black.jpeg", altText: "Lace-Trimmed Cami Top" },
-
-    ],
-    rating: 4.8,
-    numReviews: 22,
-  },
+{
+  name: "Floral Print Peplum Top",
+  description:
+    "A charming peplum top with a flattering waistline and soft floral prints. Features short puff sleeves and a round neckline, making it a perfect choice for casual outings or semi-formal events.",
+  price: 42,
+  discountPrice: 36,
+  countInStock: 35,
+  sku: "TW-W-035",
+  category: "Top Wear",
+  brand: "StyleAura",
+  sizes: ["S", "M", "L", "XL"],
+  colors: ["Red", "White", "Black"],
+  collections: "Spring Blossom",
+  material: "Cotton Blend",
+  gender: "Women",
+  images: [
+    { url: "/images/thirty five/floral-peplum-top-red.jpeg", altText: "Floral Print Peplum Top - Red" },
+    { url: "/images/thirty five/floral-peplum-top-white.jpeg", altText: "Floral Print Peplum Top - White" },
+    { url: "/images/thirty five/floral-peplum-top-black.jpeg", altText: "Floral Print Peplum Top - Black" },
+  ],
+  rating: 4.6,
+  numReviews: 19,
+},
 
   //36
   {
